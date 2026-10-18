@@ -1,0 +1,434 @@
+{
+	"info": {
+		"_postman_id": "hotel-system-api-collection",
+		"name": "HotelSystem API",
+		"description": "酒店管理系统 API 集合 - 包含用户、酒店、房间、订房、支付等功能",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "用户管理",
+			"item": [
+				{
+					"name": "用户注册",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["register"]
+						},
+						"description": "注册新用户\n- username: 用户名 (最长45字符)\n- password: 密码 (最长10字符)"
+					}
+				},
+				{
+					"name": "用户登录",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const body = pm.response.json();",
+									"if (pm.response.code === 200 && body.token) {",
+									"    pm.collectionVariables.set('token', body.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["login"]
+						},
+						"description": "用户登录。成功后自动把 token 写入 collection 变量（Bearer 用）。user_id 请在各 API 的 body 里填写登录/注册响应中的 user_id，不要用 Postman 变量记忆。"
+					}
+				}
+			]
+		},
+		{
+			"name": "酒店管理",
+			"item": [
+				{
+					"name": "创建酒店",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hotel_name\": \"测试酒店\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/hotel/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["hotel", "create"]
+						},
+						"description": "创建新酒店\n- hotel_name: 酒店名称 (最长45字符)"
+					}
+				},
+				{
+					"name": "更新酒店",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hotel_id\": \"1\",\n  \"hotel_name\": \"更新后的酒店名称\",\n  \"status\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/hotel/update",
+							"host": ["{{baseUrl}}"],
+							"path": ["hotel", "update"]
+						},
+						"description": "更新酒店信息\n- hotel_id: 酒店ID\n- hotel_name: 新酒店名称\n- status: 状态 (true/false)"
+					}
+				},
+				{
+					"name": "删除酒店",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hotel_id\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/hotel/delete",
+							"host": ["{{baseUrl}}"],
+							"path": ["hotel", "delete"]
+						},
+						"description": "删除酒店\n- hotel_id: 要删除的酒店ID"
+					}
+				},
+				{
+					"name": "查询酒店列表",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10,\n  \"hotel_id\": \"\",\n  \"hotel_name\": \"\",\n  \"create_time\": \"\",\n  \"status\": null\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/hotel/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["hotel", "list"]
+						},
+						"description": "分页查询酒店列表\n- page: 页码 (从1开始)\n- page_size: 每页数量 (最大100)\n- hotel_id: 按ID筛选 (可选)\n- hotel_name: 按名称模糊搜索 (可选)\n- create_time: 按创建日期筛选 YYYY-MM-DD (可选)\n- status: 按状态筛选 true/false/null (可选)"
+					}
+				}
+			]
+		},
+		{
+			"name": "房间管理",
+			"item": [
+				{
+					"name": "创建房间",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"hotel_id\": 1,\n  \"room_type\": \"标准间\",\n  \"price\": 200,\n  \"quantity\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/room/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["room", "create"]
+						},
+						"description": "创建新房间\n- hotel_id: 所属酒店ID (数字)\n- room_type: 房间类型 (最长45字符)\n- price: 价格 (必须大于0)\n- quantity: 房间数量 (默认1)"
+					}
+				},
+				{
+					"name": "更新房间",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"room_id\": 1,\n  \"room_type\": \"豪华间\",\n  \"price\": 500,\n  \"quantity\": 5,\n  \"status\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/room/update",
+							"host": ["{{baseUrl}}"],
+							"path": ["room", "update"]
+						},
+						"description": "更新房间信息\n- room_id: 房间ID (数字)\n- room_type: 房间类型\n- price: 价格\n- quantity: 数量\n- status: 状态 (true=可用, false=不可用)"
+					}
+				},
+				{
+					"name": "删除房间",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"room_id\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/room/delete",
+							"host": ["{{baseUrl}}"],
+							"path": ["room", "delete"]
+						},
+						"description": "删除房间\n- room_id: 要删除的房间ID"
+					}
+				},
+				{
+					"name": "查询房间列表",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10,\n  \"room_id\": \"\",\n  \"hotel_id\": \"\",\n  \"room_type\": \"\",\n  \"price\": 0,\n  \"status\": null,\n  \"create_time\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/room/list",
+							"host": ["{{baseUrl}}"],
+							"path": ["room", "list"]
+						},
+						"description": "分页查询房间列表\n- page: 页码 (从1开始)\n- page_size: 每页数量 (最大100)\n- room_id: 按房间ID筛选 (可选)\n- hotel_id: 按酒店ID筛选 (可选)\n- room_type: 按类型模糊搜索 (可选)\n- price: 按价格筛选 (可选, 0表示不筛选)\n- status: 按状态筛选 true/false/null (可选)\n- create_time: 按创建日期筛选 YYYY-MM-DD (可选)"
+					}
+				}
+			]
+		},
+		{
+			"name": "订房管理",
+			"item": [
+				{
+					"name": "创建订房",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"从登录响应复制 user_id\",\n  \"room_id\": 1,\n  \"checkin_time\": \"2026-06-24 14:00:00\",\n  \"checkout_time\": \"2026-06-25 14:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reservation/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["reservation", "create"]
+						},
+						"description": "创建订房。须带 Bearer token；user_id 写在 body（从登录响应复制）。\n- room_id、checkin_time、checkout_time"
+					}
+				}
+			]
+		},
+		{
+			"name": "支付管理",
+			"item": [
+				{
+					"name": "确认支付",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"record_id\": \"1\",\n  \"user_id\": \"从登录响应复制 user_id\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "confirm"]
+						},
+						"description": "确认支付。Bearer token + body 的 user_id（与订单一致）、record_id"
+					}
+				},
+				{
+					"name": "查询待付款列表",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10,\n  \"user_id\": \"从登录响应复制 user_id\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/pending",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "pending"]
+						},
+						"description": "待付款列表。Bearer token + body 可选 user_id 筛选"
+					}
+				},
+				{
+					"name": "取消订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"record_id\": \"1\",\n  \"user_id\": \"从登录响应复制 user_id\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "cancel"]
+						},
+						"description": "取消订单。Bearer token + body 的 record_id、user_id"
+					}
+				},
+				{
+					"name": "账单报表",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10,\n  \"user_id\": \"从登录响应复制 user_id\",\n  \"time_filter\": 1,\n  \"start_time\": \"2026-01-01 00:00:00\",\n  \"end_time\": \"2026-12-31 23:59:59\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/bill",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "bill"]
+						},
+						"description": "账单报表。Bearer token + body 可选 user_id、时间范围等"
+					}
+				}
+			]
+		},
+		{
+			"name": "钱包",
+			"item": [
+				{
+					"name": "钱包储值",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"从登录响应复制 user_id\",\n  \"amount\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/wallet/recharge",
+							"host": ["{{baseUrl}}"],
+							"path": ["wallet", "recharge"]
+						},
+						"description": "钱包储值。Bearer token + body 的 user_id、amount"
+					}
+				}
+			]
+		}
+	]
+}
