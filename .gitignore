@@ -1,0 +1,5 @@
+.gocache/
+.env
+.env.*
+*.log
+hotelSystem.exe
