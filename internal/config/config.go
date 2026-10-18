@@ -25,7 +25,7 @@ func Load() (Config, error) {
 			Host:     envString("DB_HOST", "localhost"),
 			Port:     port,
 			User:     envString("DB_USER", "hotel_Manager"),
-			Password: os.Getenv("DB_PASSWORD"),
+			Password: envString("DB_PASSWORD", "k0627123"),
 			Name:     envString("DB_NAME", "hotel_manager"),
 			SSLMode:  envString("DB_SSLMODE", "disable"),
 		},
